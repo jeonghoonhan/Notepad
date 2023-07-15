@@ -12,6 +12,8 @@ public class Notepad extends JFrame {
         new Notepad();
     }
 
+    NotepadConf conf;
+
     Notepad() {
         createGUI();
         load();
@@ -21,6 +23,9 @@ public class Notepad extends JFrame {
     }
 
     /**
+     *
+     * "설정파일은 [계정]/np.conf"
+     *
      * categories.sav
      * #카테고리
      * /노트/yyMMddHHmmss
@@ -28,9 +33,10 @@ public class Notepad extends JFrame {
      * 카테고리는 category [DIR]
      * 노트는 category/yyMMddHHmmss.sav
      *
-     * "설정파일은 [계정]/np.conf"
      */
     private void load() {
+        conf = new NotepadConf();
+
         String Home_DIR = System.getProperty("user.home");
 
         File conffile = new File(Home_DIR + File.separator + "np.conf");
@@ -41,12 +47,22 @@ public class Notepad extends JFrame {
             Scanner sc = new Scanner(conffile);
             String category;
             String readline = "";
+            String SAV = ":save";
+            char SHARP = '#';
+            char SHARP_STR = '#';
+            int idx = -1;
 
             while ((readline = sc.nextLine()) != null) {
-                if (readline.startsWith("#")) {
-                    category = readline;
-                } else {
-
+                idx = readline.indexOf(SAV);
+                if (idx > -1 && readline.length() > 6) {// 'C:\' or /home/
+                    conf.saveDIR = new File(readline.substring(idx + SAV.length()));
+                }
+                else {
+                    break;
+                }
+                idx = readline.indexOf(SHARP);
+                if (idx > -1 && readline.length() > 1) {
+                    category = readline.substring(readline.lastIndexOf('#') + 1);
                 }
             }
 
